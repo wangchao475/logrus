@@ -140,6 +140,15 @@ func (logger *Logger) WithTime(t time.Time) *Entry {
 }
 
 func (logger *Logger) Logf(level Level, format string, args ...interface{}) {
+	defer func(t time.Time){
+		d1 := time.Now()
+		diff := d1.Sub(t)
+		if diff>(time.Millisecond*300) {
+			entry := logger.newEntry()
+			entry.Infof("found a write disk slow %s, format:[%s], %v\n",diff,format,args)
+			logger.releaseEntry(entry)
+		}
+	}(time.Now())
 	if logger.IsLevelEnabled(level) {
 		entry := logger.newEntry()
 		entry.Logf(level, format, args...)
@@ -187,6 +196,15 @@ func (logger *Logger) Panicf(format string, args ...interface{}) {
 }
 
 func (logger *Logger) Log(level Level, args ...interface{}) {
+	defer func(t time.Time){
+		d1 := time.Now()
+		diff := d1.Sub(t)
+		if diff>(time.Millisecond*300) {
+			entry := logger.newEntry()
+			entry.Infof("found a write disk slow %s, %v\n",diff,args)
+			logger.releaseEntry(entry)
+		}
+	}(time.Now())
 	if logger.IsLevelEnabled(level) {
 		entry := logger.newEntry()
 		entry.Log(level, args...)
