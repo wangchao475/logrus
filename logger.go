@@ -370,3 +370,10 @@ func (logger *Logger) ReplaceHooks(hooks LevelHooks) LevelHooks {
 	logger.mu.Unlock()
 	return oldHooks
 }
+func (Logger *Logger) LxLock() {
+	Logger.mu.Lock()
+}
+
+func (Logger *Logger) LxUnlock() {
+	Logger.mu.Unlock()
+}
